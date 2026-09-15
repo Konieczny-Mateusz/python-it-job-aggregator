@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statystyki - Robota.tej</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-left">
+                <div class="nav-brand">
+                    <h1>Robota.tej</h1>
+                    <p class="nav-subtitle">Wielkopolski agregat ofert pracy</p>
+                </div>
+            </div>
+            <div class="nav-right">
+                <ul class="nav-menu">
+                    <li><a href="/" class="nav-link">Start</a></li>
+                    <li><a href="/offers" class="nav-link">Oferty</a></li>
+                    <li><a href="/statistics" class="nav-link active">Statystyki</a></li>
+                </ul>
+                <div class="dark-mode-toggle" onclick="toggleDarkMode()" title="Przełącz tryb ciemny">
+                    <div class="dark-mode-toggle-slider">
+                        <span class="theme-icon">☀️</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <section class="page-header">
+            <div class="container">
+                <h2 class="page-title">Statystyki ofert pracy</h2>
+                <p class="page-description">Szczegółowa analiza zebranych danych</p>
+            </div>
+        </section>
+
+        <section class="stats-overview">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-card stat-card-primary">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-value">{{ stats.total_jobs }}</div>
+                        <div class="stat-label">Łączna liczba ofert</div>
+                        <div class="stat-trend">Wszystkie zebrane oferty</div>
+                    </div>
+
+                    <div class="stat-card stat-card-secondary">
+                        <div class="stat-icon">🌐</div>
+                        <div class="stat-value">{{ stats.by_source|length }}</div>
+                        <div class="stat-label">Aktywne źródła</div>
+                        <div class="stat-trend">Portale z ofertami</div>
+                    </div>
+
+                    <div class="stat-card stat-card-tertiary">
+                        <div class="stat-icon">📍</div>
+                        <div class="stat-value">{{ stats.by_location|length }}</div>
+                        <div class="stat-label">Unikalne lokalizacje</div>
+                        <div class="stat-trend">Miasta i kraje</div>
+                    </div>
+
+                    <div class="stat-card stat-card-quaternary">
+                        <div class="stat-icon">💼</div>
+                        <div class="stat-value">{{ stats.by_category|length if stats.by_category else 0 }}</div>
+                        <div class="stat-label">Kategorie stanowisk</div>
+                        <div class="stat-trend">Różne specjalizacje</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="chart-section">
+            <div class="container">
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3 class="chart-title">📊 Oferty według kategorii stanowisk</h3>
+                        <div class="chart-content">
+                            {% if stats.by_category %}
+                                {% for item in stats.by_category[:10] %}
+                                <div class="chart-bar-item">
+                                    <div class="chart-bar-label">
+                                        <span class="chart-label-text">💼 {{ item.category }}</span>
+                                        <span class="chart-label-value">{{ item.count }}</span>
+                                    </div>
+                                    <div class="chart-bar-container">
+                                        {% set max_count = stats.by_category[0].count %}
+                                        <div class="chart-bar chart-bar-primary"
+                                             style="width: {{ (item.count / max_count * 100)|round|int }}%">
+                                            <span class="chart-bar-text">
+                                                {{ (item.count / stats.total_jobs * 100)|round(1) }}%
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <p class="no-data">Brak danych o kategoriach</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3 class="chart-title">🌐 Oferty według źródła</h3>
+                        <div class="chart-content">
+                            {% for item in stats.by_source %}
+                            <div class="chart-bar-item">
+                                <div class="chart-bar-label">
+                                    <span class="chart-label-text">{{ item.source }}</span>
+                                    <span class="chart-label-value">{{ item.count }}</span>
+                                </div>
+                                <div class="chart-bar-container">
+                                    <div class="chart-bar chart-bar-secondary"
+                                         style="width: {{ (item.count / stats.total_jobs * 100)|round|int }}%">
+                                        <span class="chart-bar-text">
+                                            {{ (item.count / stats.total_jobs * 100)|round(1) }}%
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="chart-section">
+            <div class="container">
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3 class="chart-title">📍 Top 10 lokalizacji</h3>
+                        <div class="chart-content">
+                            {% for item in stats.by_location[:10] %}
+                            <div class="chart-bar-item">
+                                <div class="chart-bar-label">
+                                    <span class="chart-label-text">📍 {{ item.location }}</span>
+                                    <span class="chart-label-value">{{ item.count }}</span>
+                                </div>
+                                <div class="chart-bar-container">
+                                    {% set max_count = stats.by_location[0].count %}
+                                    <div class="chart-bar chart-bar-tertiary"
+                                         style="width: {{ (item.count / max_count * 100)|round|int }}%">
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3 class="chart-title">⭐ Poziomy doświadczenia</h3>
+                        <div class="chart-content">
+                            {% for item in stats.by_experience %}
+                            <div class="chart-bar-item">
+                                <div class="chart-bar-label">
+                                    <span class="chart-label-text">⭐ {{ item.experience_level or 'Nie podano' }}</span>
+                                    <span class="chart-label-value">{{ item.count }}</span>
+                                </div>
+                                <div class="chart-bar-container">
+                                    <div class="chart-bar chart-bar-quaternary"
+                                         style="width: {{ (item.count / stats.total_jobs * 100)|round|int }}%">
+                                        <span class="chart-bar-text">
+                                            {{ (item.count / stats.total_jobs * 100)|round(1) }}%
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="insights-section">
+            <div class="container">
+                <h3 class="section-title">💡 Kluczowe wnioski i rekomendacje</h3>
+                <div class="insights-grid">
+                    <div class="insight-card">
+                        <div class="insight-icon">🏆</div>
+                        <h4 class="insight-title">Najpopularniejsze źródło</h4>
+                        <p class="insight-text">
+                            {% if stats.by_source %}
+                            <strong>{{ stats.by_source[0].source }}</strong> oferuje najwięcej ofert ({{ stats.by_source[0].count }}),
+                            co stanowi {{ (stats.by_source[0].count / stats.total_jobs * 100)|round(1) }}% wszystkich dostępnych pozycji.
+                            {% else %}
+                            Brak danych
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <div class="insight-card">
+                        <div class="insight-icon">📍</div>
+                        <h4 class="insight-title">Najliczniejsza lokalizacja</h4>
+                        <p class="insight-text">
+                            {% if stats.by_location %}
+                            W <strong>{{ stats.by_location[0].location }}</strong> dostępnych jest {{ stats.by_location[0].count }} ofert.
+                            {% if stats.by_location|length > 1 %}
+                            Kolejne popularne lokalizacje to {{ stats.by_location[1].location }} ({{ stats.by_location[1].count }})
+                            i {{ stats.by_location[2].location }} ({{ stats.by_location[2].count }}).
+                            {% endif %}
+                            {% else %}
+                            Brak danych
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <div class="insight-card">
+                        <div class="insight-icon">⭐</div>
+                        <h4 class="insight-title">Najbardziej poszukiwany poziom</h4>
+                        <p class="insight-text">
+                            {% if stats.by_experience %}
+                            Najwięcej ofert ({{ stats.by_experience[0].count }}) jest skierowanych do osób na poziomie
+                            <strong>{{ stats.by_experience[0].experience_level or 'Nie określono' }}</strong>.
+                            To {{ (stats.by_experience[0].count / stats.total_jobs * 100)|round(1) }}% wszystkich ofert.
+                            {% else %}
+                            Brak danych
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <div class="insight-card">
+                        <div class="insight-icon">💼</div>
+                        <h4 class="insight-title">Najpopularniejsza kategoria</h4>
+                        <p class="insight-text">
+                            {% if stats.by_category %}
+                            Najczęściej poszukiwani są specjaliści w obszarze <strong>{{ stats.by_category[0].category }}</strong>
+                            ({{ stats.by_category[0].count }} ofert).
+                            {% if stats.by_category|length > 1 %}
+                            Dużym zainteresowaniem cieszą się też {{ stats.by_category[1].category }}
+                            i {{ stats.by_category[2].category if stats.by_category|length > 2 else '' }}.
+                            {% endif %}
+                            {% else %}
+                            Różnorodne stanowiska IT
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <div class="insight-card">
+                        <div class="insight-icon">📋</div>
+                        <h4 class="insight-title">Dominujący typ umowy</h4>
+                        <p class="insight-text">
+                            {% if stats.by_employment_type %}
+                            Najwięcej ofert ({{ stats.by_employment_type[0].count }}) oferuje zatrudnienie w formie
+                            <strong>{{ stats.by_employment_type[0].employment_type or 'Nie określono' }}</strong>.
+                            To {{ (stats.by_employment_type[0].count / stats.total_jobs * 100)|round(1) }}% wszystkich ofert.
+                            {% else %}
+                            Brak danych
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <div class="insight-card">
+                        <div class="insight-icon">📈</div>
+                        <h4 class="insight-title">Różnorodność ofert</h4>
+                        <p class="insight-text">
+                            System agreguje oferty z <strong>{{ stats.by_source|length }} różnych portali</strong>,
+                            w <strong>{{ stats.by_location|length }} lokalizacjach</strong>,
+                            {% if stats.by_category %}
+                            obejmujących <strong>{{ stats.by_category|length }} kategorii</strong> stanowisk.
+                            {% else %}
+                            obejmujących różne stanowiska IT.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="container">
+                <div class="cta-content">
+                    <h3 class="cta-title">Przejdź do przeglądania ofert</h3>
+                    <p class="cta-description">
+                        Wykorzystaj zebrane dane i znajdź idealną ofertę dla siebie
+                    </p>
+                    <a href="/offers" class="btn btn-primary">Zobacz wszystkie oferty</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Robota.tej - Wielkopolski agregat ofert pracy</p>
+            <p class="footer-note">Projekt zaliczeniowy - System agregacji ofert pracy</p>
+        </div>
+    </footer>
+
+    <script>
+        // Dark mode toggle
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+
+            const icon = document.querySelector('.theme-icon');
+            icon.textContent = newTheme === 'dark' ? '🌙' : '☀️';
+        }
+
+        // Load saved theme
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+
+            const icon = document.querySelector('.theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+            }
+        });
+    </script>
+</body>
+</html>

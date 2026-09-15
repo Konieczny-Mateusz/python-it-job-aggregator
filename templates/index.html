@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robota.tej - Agregator Ofert Pracy</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-left">
+                <div class="nav-brand">
+                    <h1>Robota.tej</h1>
+                    <p class="nav-subtitle">Wielkopolski agregat ofert pracy</p>
+                </div>
+            </div>
+            <div class="nav-right">
+                <ul class="nav-menu">
+                    <li><a href="/" class="nav-link active">Start</a></li>
+                    <li><a href="/offers" class="nav-link">Oferty</a></li>
+                    <li><a href="/statistics" class="nav-link">Statystyki</a></li>
+                </ul>
+                <div class="dark-mode-toggle" onclick="toggleDarkMode()" title="Przełącz tryb ciemny">
+                    <div class="dark-mode-toggle-slider">
+                        <span class="theme-icon">☀️</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+        // Dark mode toggle
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+
+            // Update icon
+            const icon = document.querySelector('.theme-icon');
+            icon.textContent = newTheme === 'dark' ? '🌙' : '☀️';
+        }
+
+        // Load saved theme on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+
+            const icon = document.querySelector('.theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+            }
+        });
+    </script>
+
+    <main class="main-content">
+        <section class="hero-section">
+            <div class="container">
+                <h2 class="hero-title">Znajdź swoją wymarzaną pracę</h2>
+                <p class="hero-description">
+                    Przeszukujemy najlepsze serwisy z ofertami pracy, aby przedstawić Ci najciekawsze propozycje
+                    w jednym miejscu.
+                </p>
+                <a href="/offers" class="btn btn-primary">Przeglądaj oferty</a>
+            </div>
+        </section>
+
+        <section class="stats-overview">
+            <div class="container">
+                <h3 class="section-title">Aktualne statystyki</h3>
+                
+                <div class="stats-grid">
+                    <div class="stat-card stat-card-primary">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-value">{{ stats.total_jobs }}</div>
+                        <div class="stat-label">Łączna liczba ofert</div>
+                    </div>
+                    
+                    <div class="stat-card stat-card-secondary">
+                        <div class="stat-icon">🌐</div>
+                        <div class="stat-value">{{ stats.by_source|length }}</div>
+                        <div class="stat-label">Źródła danych</div>
+                    </div>
+                    
+                    <div class="stat-card stat-card-tertiary">
+                        <div class="stat-icon">📍</div>
+                        <div class="stat-value">{{ stats.by_location|length }}</div>
+                        <div class="stat-label">Lokalizacji</div>
+                    </div>
+                    
+                    <div class="stat-card stat-card-quaternary">
+                        <div class="stat-icon">💼</div>
+                        <div class="stat-value">{{ stats.by_experience|length }}</div>
+                        <div class="stat-label">Poziomy doświadczenia</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="sources-section">
+            <div class="container">
+                <h3 class="section-title">Oferty według źródła</h3>
+                
+                <div class="sources-grid">
+                    {% for item in stats.by_source %}
+                    <div class="source-card">
+                        <div class="source-header">
+                            <h4 class="source-name">{{ item.source }}</h4>
+                            <span class="source-badge">{{ item.count }} ofert</span>
+                        </div>
+                        <div class="source-progress">
+                            <div class="progress-bar" style="width: {{ (item.count / stats.total_jobs * 100)|round|int }}%"></div>
+                        </div>
+                        <p class="source-percentage">
+                            {{ (item.count / stats.total_jobs * 100)|round(1) }}% wszystkich ofert
+                        </p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <section class="locations-section">
+            <div class="container">
+                <h3 class="section-title">Najpopularniejsze lokalizacje</h3>
+                
+                <div class="locations-list">
+                    {% for item in stats.by_location[:5] %}
+                    <div class="location-item">
+                        <div class="location-info">
+                            <span class="location-icon">📍</span>
+                            <span class="location-name">{{ item.location }}</span>
+                        </div>
+                        <span class="location-count">{{ item.count }} ofert</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="container">
+                <div class="cta-content">
+                    <h3 class="cta-title">Gotowy na nowe wyzwania?</h3>
+                    <p class="cta-description">
+                        Przeglądaj aktualne oferty pracy i znajdź swoją wymarzoną pozycję
+                    </p>
+                    <div class="cta-buttons">
+                        <a href="/offers" class="btn btn-primary">Zobacz oferty</a>
+                        <a href="/statistics" class="btn btn-secondary">Sprawdź statystyki</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Robota.tej - Wielkopolski agregat ofert pracy</p>
+            <p class="footer-note">Projekt zaliczeniowy - System agregacji ofert pracy</p>
+        </div>
+    </footer>
+</body>
+</html>

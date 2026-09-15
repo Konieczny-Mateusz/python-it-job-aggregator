@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oferty pracy - Robota.tej</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-left">
+                <div class="nav-brand">
+                    <h1>Robota.tej</h1>
+                    <p class="nav-subtitle">Wielkopolski agregat ofert pracy</p>
+                </div>
+            </div>
+            <div class="nav-right">
+                <ul class="nav-menu">
+                    <li><a href="/" class="nav-link">Start</a></li>
+                    <li><a href="/offers" class="nav-link active">Oferty</a></li>
+                    <li><a href="/statistics" class="nav-link">Statystyki</a></li>
+                </ul>
+                <div class="dark-mode-toggle" onclick="toggleDarkMode()" title="Przełącz tryb ciemny">
+                    <div class="dark-mode-toggle-slider">
+                        <span class="theme-icon">☀️</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <section class="page-header">
+            <div class="container">
+                <h2 class="page-title">Przeglądaj oferty pracy</h2>
+                <p class="page-description">Użyj filtrów, aby znaleźć idealne oferty dla siebie</p>
+            </div>
+        </section>
+
+        <section class="filters-section">
+            <div class="container">
+                <div class="filters-header">
+                    <h3 class="filters-title">Filtry wyszukiwania</h3>
+                    {% if filters.keyword or filters.location or filters.source or filters.experience or filters.category %}
+                    <div class="active-filters">
+                        <span class="active-filters-label">Aktywne filtry:</span>
+                        {% if filters.keyword %}
+                        <span class="filter-tag">
+                            Szukaj: "{{ filters.keyword }}"
+                            <a href="?location={{ filters.location }}&source={{ filters.source }}&experience={{ filters.experience }}&category={{ filters.category }}" class="filter-tag-remove">×</a>
+                        </span>
+                        {% endif %}
+                        {% if filters.location %}
+                        <span class="filter-tag">
+                            📍 {{ filters.location }}
+                            <a href="?keyword={{ filters.keyword }}&source={{ filters.source }}&experience={{ filters.experience }}&category={{ filters.category }}" class="filter-tag-remove">×</a>
+                        </span>
+                        {% endif %}
+                        {% if filters.source %}
+                        <span class="filter-tag">
+                            🌐 {{ filters.source }}
+                            <a href="?keyword={{ filters.keyword }}&location={{ filters.location }}&experience={{ filters.experience }}&category={{ filters.category }}" class="filter-tag-remove">×</a>
+                        </span>
+                        {% endif %}
+                        {% if filters.category %}
+                        <span class="filter-tag">
+                            💼 {{ filters.category }}
+                            <a href="?keyword={{ filters.keyword }}&location={{ filters.location }}&source={{ filters.source }}&experience={{ filters.experience }}" class="filter-tag-remove">×</a>
+                        </span>
+                        {% endif %}
+                        {% if filters.experience %}
+                        <span class="filter-tag">
+                            ⭐ {{ filters.experience }}
+                            <a href="?keyword={{ filters.keyword }}&location={{ filters.location }}&source={{ filters.source }}&category={{ filters.category }}" class="filter-tag-remove">×</a>
+                        </span>
+                        {% endif %}
+                        <a href="/offers" class="clear-all-filters">Wyczyść wszystkie</a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <form method="GET" action="/offers" class="filters-form" id="filtersForm">
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label for="keyword" class="filter-label">
+                                <span class="filter-icon">🔍</span>
+                                Słowo kluczowe
+                            </label>
+                            <input
+                                type="text"
+                                id="keyword"
+                                name="keyword"
+                                class="filter-input"
+                                placeholder="np. Python, React..."
+                                value="{{ filters.keyword }}"
+                            >
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="location" class="filter-label">
+                                <span class="filter-icon">📍</span>
+                                Lokalizacja
+                            </label>
+                            <select id="location" name="location" class="filter-select">
+                                <option value="">Wszystkie lokalizacje</option>
+                                {% for loc in locations %}
+                                <option value="{{ loc }}" {% if filters.location == loc %}selected{% endif %}>
+                                    {{ loc }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="source" class="filter-label">
+                                <span class="filter-icon">🌐</span>
+                                Źródło
+                            </label>
+                            <select id="source" name="source" class="filter-select">
+                                <option value="">Wszystkie źródła</option>
+                                {% for src in sources %}
+                                <option value="{{ src }}" {% if filters.source == src %}selected{% endif %}>
+                                    {{ src }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="category" class="filter-label">
+                                <span class="filter-icon">💼</span>
+                                Stanowisko
+                            </label>
+                            <select id="category" name="category" class="filter-select">
+                                <option value="">Wszystkie stanowiska</option>
+                                {% for cat in categories %}
+                                <option value="{{ cat }}" {% if filters.category == cat %}selected{% endif %}>
+                                    {{ cat }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="experience" class="filter-label">
+                                <span class="filter-icon">⭐</span>
+                                Doświadczenie
+                            </label>
+                            <select id="experience" name="experience" class="filter-select">
+                                <option value="">Wszystkie poziomy</option>
+                                {% for exp in experience_levels %}
+                                <option value="{{ exp }}" {% if filters.experience == exp %}selected{% endif %}>
+                                    {{ exp }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="filters-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <span>🔍</span> Szukaj
+                        </button>
+                        <a href="/offers" class="btn btn-secondary">
+                            <span>🔄</span> Resetuj
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section class="offers-section">
+            <div class="container">
+                <div class="offers-header">
+                    <div class="offers-header-left">
+                        <h3 class="section-title">
+                            {% if jobs %}
+                                <span class="results-count">{{ jobs|length }}</span>
+                                {% if jobs|length == 1 %}
+                                    oferta znaleziona
+                                {% elif jobs|length < 5 %}
+                                    oferty znalezione
+                                {% else %}
+                                    ofert znalezionych
+                                {% endif %}
+                            {% else %}
+                                Brak ofert spełniających kryteria
+                            {% endif %}
+                        </h3>
+                    </div>
+                    <div class="offers-header-right">
+                        <label for="sortBy" class="sort-label">Sortuj:</label>
+                        <select id="sortBy" class="sort-select" onchange="sortOffers(this.value)">
+                            <option value="newest">Najnowsze</option>
+                            <option value="oldest">Najstarsze</option>
+                            <option value="title-asc">Tytuł A-Z</option>
+                            <option value="title-desc">Tytuł Z-A</option>
+                            <option value="company-asc">Firma A-Z</option>
+                            <option value="company-desc">Firma Z-A</option>
+                        </select>
+                    </div>
+                </div>
+
+                {% if jobs %}
+                <div class="offers-list">
+                    {% for job in jobs %}
+                    <article class="job-card" id="job-{{ job.id }}">
+                        <div class="job-header">
+                            <div class="job-title-group">
+                                <h4 class="job-title">{{ job.title }}</h4>
+                                <p class="job-company">
+                                    <span class="company-icon">🏢</span>
+                                    {{ job.company or 'Nie podano' }}
+                                </p>
+                            </div>
+                            <div class="job-badges">
+                                <span class="job-source-badge">{{ job.source }}</span>
+                                {% if job.category %}
+                                <span class="job-category-badge">{{ job.category }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="job-details">
+                            <div class="job-detail-item">
+                                <span class="detail-icon">📍</span>
+                                <span class="detail-text">{{ job.location }}</span>
+                            </div>
+
+                            <div class="job-detail-item">
+                                <span class="detail-icon">💰</span>
+                                <span class="detail-text">{{ job.salary|format_salary }}</span>
+                            </div>
+
+                            <div class="job-detail-item">
+                                <span class="detail-icon">📋</span>
+                                <span class="detail-text">{{ job.employment_type or 'Nie podano' }}</span>
+                            </div>
+
+                            <div class="job-detail-item">
+                                <span class="detail-icon">⭐</span>
+                                <span class="detail-text">{{ job.experience_level or 'Nie podano' }}</span>
+                            </div>
+                        </div>
+
+                        {% if job.description %}
+                        <p class="job-description">{{ job.description|truncate_text(200) }}</p>
+                        {% endif %}
+
+                        <div class="job-footer">
+                            <span class="job-date">
+                                <span class="date-icon">📅</span>
+                                Opublikowano: {{ job.posted_date }}
+                            </span>
+                            {% if job.url %}
+                            <a href="{{ job.url }}" target="_blank" class="btn btn-small btn-primary">
+                                Zobacz ofertę →
+                            </a>
+                            {% endif %}
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">🔍</div>
+                    <h3 class="empty-title">Nie znaleziono ofert</h3>
+                    <p class="empty-description">
+                        Spróbuj zmienić kryteria wyszukiwania lub
+                        <a href="/offers" class="link-primary">wyczyść filtry</a>
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Robota.tej - Wielkopolski agregat ofert pracy</p>
+            <p class="footer-note">Projekt zaliczeniowy - System agregacji ofert pracy</p>
+        </div>
+    </footer>
+
+    <script>
+        // Dark mode toggle
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+
+            const icon = document.querySelector('.theme-icon');
+            icon.textContent = newTheme === 'dark' ? '🌙' : '☀️';
+        }
+
+        // Load saved theme
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+
+            const icon = document.querySelector('.theme-icon');
+            if (icon) {
+                icon.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+            }
+        });
+
+        // Advanced filtering - live search
+        const filterForm = document.getElementById('filtersForm');
+        const filterInputs = filterForm.querySelectorAll('input, select');
+
+        // Auto-submit on change for select elements
+        filterInputs.forEach(input => {
+            if (input.tagName === 'SELECT') {
+                input.addEventListener('change', () => {
+                    filterForm.submit();
+                });
+            }
+        });
+
+        // Client-side sorting
+        function sortOffers(sortBy) {
+            const offersList = document.querySelector('.offers-list');
+            const offers = Array.from(offersList.querySelectorAll('.job-card'));
+
+            offers.sort((a, b) => {
+                switch(sortBy) {
+                    case 'newest':
+                        const dateA = a.querySelector('.job-date').textContent;
+                        const dateB = b.querySelector('.job-date').textContent;
+                        return dateB.localeCompare(dateA);
+
+                    case 'oldest':
+                        const dateA2 = a.querySelector('.job-date').textContent;
+                        const dateB2 = b.querySelector('.job-date').textContent;
+                        return dateA2.localeCompare(dateB2);
+
+                    case 'title-asc':
+                        const titleA = a.querySelector('.job-title').textContent;
+                        const titleB = b.querySelector('.job-title').textContent;
+                        return titleA.localeCompare(titleB);
+
+                    case 'title-desc':
+                        const titleA2 = a.querySelector('.job-title').textContent;
+                        const titleB2 = b.querySelector('.job-title').textContent;
+                        return titleB2.localeCompare(titleA2);
+
+                    case 'company-asc':
+                        const compA = a.querySelector('.job-company').textContent;
+                        const compB = b.querySelector('.job-company').textContent;
+                        return compA.localeCompare(compB);
+
+                    case 'company-desc':
+                        const compA2 = a.querySelector('.job-company').textContent;
+                        const compB2 = b.querySelector('.job-company').textContent;
+                        return compB2.localeCompare(compA2);
+
+                    default:
+                        return 0;
+                }
+            });
+
+            // Clear and re-append sorted offers
+            offersList.innerHTML = '';
+            offers.forEach(offer => offersList.appendChild(offer));
+        }
+    </script>
+</body>
+</html>
