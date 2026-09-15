@@ -117,5 +117,5 @@ python-it-job-aggregator/
 
 Projekt zbudowany jako element portfolio prezentujący praktyczne umiejętności inżynierii danych, automatyzacji (Python) oraz podstaw tworzenia backendu aplikacji internetowych.
 
-Mateusz
-Aspiring Data Analyst | Power BI | SQL | Python | Excel | R
+**Mateusz**  
+*Aspiring Data Analyst | Power BI | SQL | Python | Excel | R*
