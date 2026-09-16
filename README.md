@@ -120,7 +120,7 @@ python-it-job-aggregator/
 Aplikacja została zaprojektowana z naciskiem na czytelność (Data Storytelling) i wygodę użytkowania (UX). Posiada wbudowany i w pełni działający tryb ciemny (Dark Mode).
 
 **1. Strona główna z podsumowaniem (Hero Section)**  
-![Strona główna](images/01-hero-section-home.jpg)
+![Strona główna](images/01-hero-section-home.png)
 
 **2. Przeglądarka ofert z zaawansowanym filtrowaniem**  
 ![Oferty pracy - filtry](images/02-offers-filtering.png)
