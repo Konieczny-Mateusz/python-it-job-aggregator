@@ -113,6 +113,35 @@ python-it-job-aggregator/
         └── statistics.html
 ```
 
+---
+
+## Podgląd aplikacji (UI)
+
+Aplikacja została zaprojektowana z naciskiem na czytelność (Data Storytelling) i wygodę użytkowania (UX). Posiada wbudowany i w pełni działający tryb ciemny (Dark Mode).
+
+**1. Strona główna z podsumowaniem (Hero Section)**  
+![Strona główna](images/01-hero-section-home.jpg)
+
+**2. Przeglądarka ofert z zaawansowanym filtrowaniem**  
+![Oferty pracy - filtry](images/02-offers-filtering.png)
+
+**3. Interaktywne wskaźniki i podział na źródła**  
+![Oferty według źródła](images/03-sources-overview.png)
+
+**4. Panel analityczny - Statystyki rynku IT (Light Mode)**  
+![Statystyki - Jasny motyw](images/04-statistics-light-mode.png)
+
+**5. Panel analityczny - Statystyki rynku IT (Dark Mode)**  
+![Statystyki - Ciemny motyw](images/05-statistics-dark-mode.png)
+
+**6. Top 10 Lokalizacji i Poziomy Doświadczenia**  
+![Wykresy analityczne](images/06-location-and-experience.png)
+
+**7. Podsumowanie i kluczowe wnioski biznesowe**  
+![Rekomendacje](images/07-business-insights.png)
+
+---
+
 ### Projekt i wykonanie
 
 Projekt zbudowany jako element portfolio prezentujący praktyczne umiejętności inżynierii danych, automatyzacji (Python) oraz podstaw tworzenia backendu aplikacji internetowych.
